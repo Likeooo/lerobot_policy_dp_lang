@@ -1,0 +1,11 @@
+[project]
+name = "lerobot_policy_dp_lang"
+version = "0.1.0"
+dependencies = [
+    "setuptools>=71.0.0,<81.0.0",
+]
+requires-python = ">= 3.10"
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
