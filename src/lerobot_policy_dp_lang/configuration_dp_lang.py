@@ -162,7 +162,7 @@ class DPLangConfig(PreTrainedConfig):
     use_separate_rgb_encoder_per_camera: bool = False
     # new
     # Language conditioning.
-    language_conditioned: bool = False
+    language_conditioned: bool = True
     tokenizer: str = "distilbert-base-uncased"
     tokenizer_max_length: int = 48
     # Unet.
