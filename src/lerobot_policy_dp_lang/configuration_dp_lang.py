@@ -154,7 +154,7 @@ class DPLangConfig(PreTrainedConfig):
     # Architecture / modeling.
     # Vision backbone.
     vision_backbone: str = "resnet18"
-    crop_shape: tuple[int, int] | None = (84, 84)
+    crop_shape: tuple[int, int] | None = None
     crop_is_random: bool = True
     pretrained_backbone_weights: str | None = None
     use_group_norm: bool = True
@@ -166,13 +166,20 @@ class DPLangConfig(PreTrainedConfig):
     tokenizer: str = "distilbert-base-uncased"
     tokenizer_max_length: int = 48
     # Unet.
-    down_dims: tuple[int, ...] = (256, 512, 1024)
+    down_dims: tuple[int, ...] = (512, 1024, 2048)
     kernel_size: int = 5
     n_groups: int = 8
     diffusion_step_embed_dim: int = 128
     use_film_scale_modulation: bool = True
+    
+    # 是否使用六张图像输入
+    use_six_images: bool = False
+    
+    # 数据集类型
+    dataset_type: str = "libero"  # "vlabench" or "libero"
+    
     # Noise scheduler.
-    noise_scheduler_type: str = "DDIM"
+    noise_scheduler_type: str = "DDPM"
     num_train_timesteps: int = 100
     beta_schedule: str = "squaredcos_cap_v2"
     beta_start: float = 0.0001
@@ -196,6 +203,47 @@ class DPLangConfig(PreTrainedConfig):
     scheduler_warmup_steps: int = 500
 
     def __post_init__(self):
+        if self.use_six_images:
+            self.input_features = {
+                "observation.image_0": PolicyFeature(
+                    type=FeatureType.VISUAL,
+                    shape=(3, 480, 480)
+                ),
+                "observation.image_1": PolicyFeature(
+                    type=FeatureType.VISUAL,
+                    shape=(3, 480, 480)
+                ),
+                "observation.image_2": PolicyFeature(
+                    type=FeatureType.VISUAL,
+                    shape=(3, 480, 480)
+                ),
+                "observation.image_3": PolicyFeature(
+                    type=FeatureType.VISUAL,
+                    shape=(3, 480, 480)
+                ),
+                "observation.image_4": PolicyFeature(
+                    type=FeatureType.VISUAL,
+                    shape=(3, 480, 480)
+                ),
+                "observation.image_wrist": PolicyFeature(
+                    type=FeatureType.VISUAL,
+                    shape=(3, 480, 480)
+                ),
+                "observation.state": PolicyFeature(
+                    type=FeatureType.STATE,
+                    shape=(8,)
+                ),
+                "task": PolicyFeature(
+                    type=FeatureType.LANGUAGE,
+                    shape=()  # language inputs are tokenized and embedded, so they don't have a fixed shape at the config level.
+                )
+            }
+        if self.dataset_type == "vlabench":
+            self.input_features["observation.state"] = PolicyFeature(
+                type=FeatureType.STATE,
+                shape=(7,)
+            )
+
         super().__post_init__()
 
         """Input validation (not exhaustive)."""
