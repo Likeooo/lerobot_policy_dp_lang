@@ -247,6 +247,16 @@ class WebPolicyServer:
             if isinstance(value, np.ndarray):
                 # 转换为torch tensor并放到设备上
                 tensor_value = torch.from_numpy(np.array(value, copy=True)).to(self.device)
+                # ######################如果是全黑调试模式，这里把图像变成全黑，测试模型是否会看图像 ###################
+                if os.getenv("DEBUG_BLACK_IMAGE") == "1" and "observation.image" in key:
+                    print(colored(f"DEBUG: Setting {key} to all black for debugging.", "red"))
+                    tensor_value = torch.zeros_like(tensor_value)
+                
+                # ######################如果是state全0调试模式，这里把state全部变0，测试模型是否会看图像 ###################
+                if os.getenv("DEBUG_ZERO_STATE") == "1" and "observation.state" in key:
+                    print(colored(f"DEBUG: Setting {key} to all zeros for debugging.", "red"))
+                    tensor_value = torch.zeros_like(tensor_value)
+                    
                 # 处理图像数据（根据客户端代码，图像已经是[C, H, W]格式， 数值[0,1]）
                 if ("observation.image" in key and tensor_value.ndim == 3) or \
                     ("observation.state" in key and tensor_value.ndim == 1) or \
