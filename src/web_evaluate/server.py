@@ -44,6 +44,7 @@ from lerobot.configs.default import DatasetConfig
 import functools
 
 import msgpack
+import os
 
 # import debugpy
 # try:
