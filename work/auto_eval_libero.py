@@ -4,6 +4,9 @@ import subprocess
 import signal
 import shutil
 
+os.environ["DEBUG_BLACK_IMAGE"] = "0"  # 设置为 "1" 启用全黑图像调试模式
+os.environ["DEBUG_ZERO_STATE"] = "0"  # 设置为 "1" 启用全0状态调试模式
+
 # --- 路径配置 ---
 TASK_NAME = "libero_10" # libero_object libero_spatial libero_goal libero_10
 MODEL_TYPE = "dp_lang" 
